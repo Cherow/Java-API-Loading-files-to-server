@@ -75,7 +75,7 @@ public class LoadImageController {
     public UploadFileResponse uploadFile (@RequestParam("file") MultipartFile file){
         String filename = service.storeFile(file);
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
+                .path("/v1/api/downloadFile/")
                 .path(filename)
                 .toUriString();
         return new UploadFileResponse(filename,fileDownloadUri,file.getContentType(),
@@ -93,6 +93,8 @@ public class LoadImageController {
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
+
+        log.info("FILE NAME: {}", fileName);
         //Resource resource = service.loadFileAsResource(fileName);
         Resource resource = service.loadFileAsResource(fileName);
 

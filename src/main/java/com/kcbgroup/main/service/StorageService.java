@@ -38,7 +38,7 @@ public class StorageService {
                 return "image save successfully" +file.getOriginalFilename();
             }
         } catch (IOException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         return null;
     }
@@ -46,11 +46,7 @@ public class StorageService {
     public byte[] downloadImage(String filename){
 
        Optional<ImageData> optional = repo.findByName(filename);
-       if (optional.isPresent()){
-           byte[] image =optional.get().getImageData();
-           return image;
-       }
-       return null;
+        return optional.map(ImageData::getImageData).orElse(null);
 
     }
 
@@ -67,9 +63,6 @@ public class StorageService {
         } catch (Exception ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
-
-
-
 
     }
 
@@ -107,7 +100,5 @@ public class StorageService {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
     }
-
-
 
 }

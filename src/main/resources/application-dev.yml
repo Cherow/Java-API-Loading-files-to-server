@@ -1,0 +1,31 @@
+server:
+  port: 8081
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 215MB
+      enabled: true
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3306/flowers_images?useSSL = false
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+  config:
+    activate:
+      on-profile:
+
+
+file:
+  upload-dir: C:\Users\KEN20957\Documents\PersonalProjects\server-to-load-files
+
+
+
+
+
