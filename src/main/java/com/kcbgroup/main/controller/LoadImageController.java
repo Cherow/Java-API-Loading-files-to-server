@@ -78,8 +78,16 @@ public class LoadImageController {
                 .path("/v1/api/downloadFile/")
                 .path(filename)
                 .toUriString();
-        return new UploadFileResponse(filename,fileDownloadUri,file.getContentType(),
-        file.getSize());
+
+        return  UploadFileResponse.builder()
+                .fileDownloadUri(fileDownloadUri)
+                .fileType(file.getContentType())
+                .fileName(filename)
+                .size(file.getSize())
+                .build();
+
+//        return new UploadFileResponse(filename,fileDownloadUri,file.getContentType(),
+//        file.getSize());
     }
 
     @PostMapping("/uploadMultipleFiles")

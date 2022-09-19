@@ -6,6 +6,7 @@ import com.kcbgroup.main.exception.FileStorageException;
 import com.kcbgroup.main.exception.MyFileNotFoundException;
 import com.kcbgroup.main.repository.StorageRepo;
 import com.kcbgroup.main.service.StorageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,6 +26,7 @@ import java.util.Optional;
  * @ AUTHOR MKOECH
  **/
 @Service
+@Slf4j
 public class StorageServiceImpl implements StorageService {
 
     private final Path fileStorageLocation;
@@ -53,6 +55,7 @@ public class StorageServiceImpl implements StorageService {
 
 
             if (imageData != null) {
+                //log.info();
                 return "image save successfully" + file.getOriginalFilename();
             }
         } catch (IOException e) {
