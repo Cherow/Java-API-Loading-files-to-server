@@ -1,6 +1,5 @@
 package com.kcbgroup.main.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -27,6 +26,7 @@ public class ImageData {
     @Lob
     @Column(name = "imageData")
     private byte[] imageData;
+
 
 
     public Integer getID() {

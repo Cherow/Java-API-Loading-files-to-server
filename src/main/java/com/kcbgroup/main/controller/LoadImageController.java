@@ -1,21 +1,23 @@
 package com.kcbgroup.main.controller;
 
+import com.kcbgroup.main.entity.UploadFileResponse;
 import com.kcbgroup.main.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ AUTHOR MKOECH
@@ -24,8 +26,14 @@ import java.nio.file.StandardCopyOption;
 @RequestMapping("/v1/api")
 @Slf4j
 public class LoadImageController {
+
     @Autowired
     private StorageService service;
+
+
+
+    //****************Uploading and  downloading  files to a database************//
+
 
     @GetMapping("/download/image/{filename}")
     public ResponseEntity<?> downloadImage (@PathVariable("filename") String filename){
@@ -44,33 +52,66 @@ public class LoadImageController {
         System.out.println(file.getSize());
         System.out.println(file.getName());
         System.out.println(file.getOriginalFilename());
+
         try {
+            System.out.println(Arrays.toString(file.getBytes()));
             System.out.println(file.getInputStream());
         }catch (IOException e){
-            e.getMessage();
+            e.printStackTrace();
         }
 
 
-        //String pathDirectory = "C:\\Users\\KEN20957\\Documents\\PersonalProjects\\load-files-to-server\\load-files-to-server\\src\\main\\resources\\static";
+       log.info("***************Store image in database");
+       String uploadImage = service.uploadImage(file);
 
-
-        //storing image in a file
-//        try {
-//         String   pathDirectory = new ClassPathResource("static").getFile().getAbsolutePath();
-//            Files.copy(file.getInputStream(), Paths.get(pathDirectory+ File.separator+file.getOriginalFilename()),
-//                    StandardCopyOption.REPLACE_EXISTING);
-//        } catch (IOException e) {
-//            e.getMessage();
-//        }
-        log.info("***************Store image in database");
-        String uploadImage = service.uploadImage(file);
-
-
-      //  return ResponseEntity.ok(uploadImage);
         return new ResponseEntity<>(uploadImage,HttpStatus.CREATED);
+
     }
 
 
+    //************************Uploading and Downloading file to a local file directory*******//
+
+    @PostMapping("/uploadFile")
+    public UploadFileResponse uploadFile (@RequestParam("file") MultipartFile file){
+        String filename = service.storeFile(file);
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(filename)
+                .toUriString();
+        return new UploadFileResponse(filename,fileDownloadUri,file.getContentType(),
+        file.getSize());
+    }
+
+    @PostMapping("/uploadMultipleFiles")
+    private List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files){
+        return Arrays.stream(files)
+                .map(this::uploadFile)
+                .collect(Collectors.toList());
+    }
 
 
+    @GetMapping("/downloadFile/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+        // Load file as Resource
+        //Resource resource = service.loadFileAsResource(fileName);
+        Resource resource = service.loadFileAsResource(fileName);
+
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            log.info("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 }
