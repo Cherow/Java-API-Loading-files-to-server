@@ -1,7 +1,7 @@
 package com.kcbgroup.main.controller;
 
 import com.kcbgroup.main.entity.UploadFileResponse;
-import com.kcbgroup.main.service.impl.StorageServiceImpl;
+import com.kcbgroup.main.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 public class LoadImageController {
 
     @Autowired
-    private StorageServiceImpl service;
+
+    private StorageService service;
 
 
 
