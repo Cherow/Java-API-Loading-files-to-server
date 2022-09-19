@@ -1,7 +1,7 @@
 package com.kcbgroup.main.controller;
 
 import com.kcbgroup.main.entity.UploadFileResponse;
-import com.kcbgroup.main.service.StorageService;
+import com.kcbgroup.main.service.impl.StorageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class LoadImageController {
 
     @Autowired
-    private StorageService service;
+    private StorageServiceImpl service;
 
 
 
@@ -94,8 +94,8 @@ public class LoadImageController {
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
 
+
         log.info("FILE NAME: {}", fileName);
-        //Resource resource = service.loadFileAsResource(fileName);
         Resource resource = service.loadFileAsResource(fileName);
 
         // Try to determine file's content type
